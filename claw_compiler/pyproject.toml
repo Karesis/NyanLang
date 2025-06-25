@@ -1,0 +1,10 @@
+[project]
+name = "claw-compiler"
+version = "0.1.0"
+description = "The reference compiler for the Nyan programming language."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["llvmlite"]
+
+[project.scripts]
+claw = "claw.cli:main"

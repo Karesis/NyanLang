@@ -1,0 +1,27 @@
+// 普通块/函数
+add(a: i32, b: i32) -> i32 
+{
+    ret a + b
+}
+
+// 复合返回块
+calc_and_capture(x: i32, y: i32) -> i32{x_val: i32, y_val: i32} 
+{
+    .x_val = x // 也许可以用 .y = x 这样的语法来重命名字段
+    .y_val = y
+    ret x * y
+}
+
+// 定义管道(流程)
+@main 
+{
+    A = add(10, 20)
+    print(A) // 应输出 30
+
+    B = calc_and_capture(3, 4)
+    print(B)       // 应输出 12 (主返回值)
+    print(B.x_val) // 应输出 3
+    print(B.y_val) // 应输出 4
+}
+
+main; // 执行 main 流程
