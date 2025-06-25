@@ -14,9 +14,6 @@
    limitations under the License.
 """
 
-
-# src/claw/token.py
-
 from enum import Enum, auto
 from dataclasses import dataclass
 
@@ -67,7 +64,7 @@ class Token:
         return f"Token(type={self.type.name}, literal='{self.literal}')"
 
 # 关键字映射
-# 这有助于词法分析器在识别出标识符后，检查它是否是一个关键字。
+# 用于词法分析器在识别出标识符后，检查它是否是一个关键字。
 keywords = {
     "ret": TokenType.RET,
     "def": TokenType.DEF

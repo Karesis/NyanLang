@@ -14,9 +14,6 @@
    limitations under the License.
 """
 
-
-# src/claw/ast.py (fixed with missing methods)
-
 from abc import ABC, abstractmethod
 from typing import List, Optional, Tuple
 from .token import Token

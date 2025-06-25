@@ -14,9 +14,6 @@
    limitations under the License.
 """
 
-
-# src/claw/lexer.py
-
 from .token import Token, TokenType, lookup_ident
 
 class Lexer:
@@ -89,7 +86,6 @@ class Lexer:
 
         tok: Token
 
-        # `match` 语句非常适合词法分析
         match self.ch:
             case '=':
                 tok = Token(TokenType.ASSIGN, self.ch)
@@ -137,11 +133,11 @@ class Lexer:
                 if is_letter(self.ch):
                     literal = self.read_identifier()
                     token_type = lookup_ident(literal) # 检查是否为关键字
-                    # read_identifier 内部已经移动了指针，所以我们直接返回
+                    # read_identifier 内部已经移动了指针，所以直接返回
                     return Token(token_type, literal)
                 elif self.ch.isdigit():
                     literal = self.read_number()
-                    # read_number 内部已经移动了指针，所以我们直接返回
+                    # read_number 内部已经移动了指针，所以直接返回
                     return Token(TokenType.INTEGER, literal)
                 else:
                     tok = Token(TokenType.ILLEGAL, self.ch)

@@ -14,15 +14,11 @@
    limitations under the License.
 """
 
-
-# src/claw/codegen.py (final fix for scope issue)
-
 from llvmlite import ir, binding
 from . import ast
 
 class CodeGen:
     def __init__(self):
-        # ... (init logic is unchanged) ...
         binding.initialize(); binding.initialize_native_target(); binding.initialize_native_asmprinter()
         self.target_triple = binding.get_default_triple()
         target = binding.Target.from_triple(self.target_triple)
@@ -52,7 +48,6 @@ class CodeGen:
     def generic_visit(self, node: ast.Node):
         raise NotImplementedError(f'No visit_{node.__class__.__name__} method for {node}')
 
-    # --- [修正] 更智能的顶层访问 ---
     def visit_Program(self, node: ast.Program):
         # 第一遍：先访问所有结构体定义，建立类型“户籍库”
         for stmt in node.statements:
@@ -63,10 +58,6 @@ class CodeGen:
         for stmt in node.statements:
             if isinstance(stmt, ast.FunctionDeclaration):
                 self.visit(stmt)
-        
-        # 注意：我们在这里有意地忽略了其他所有类型的顶层语句，
-        # 例如 ExpressionStatement (main;)，因为它们是给运行时
-        # 的指令，而不是需要生成到模块里的具体定义。
 
     def visit_StructDefinition(self, node: ast.StructDefinition):
         struct_name = node.name.value
@@ -169,5 +160,5 @@ class CodeGen:
             case '/': return self.builder.sdiv(left, right, name="divtmp")
         raise NotImplementedError(f"Infix operator {node.operator} not implemented")
 
-# 在文件顶部定义
+# 目前支持的类型
 llvm_type_map = { "i32": ir.IntType(32) }

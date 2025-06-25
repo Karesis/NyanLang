@@ -14,9 +14,6 @@
    limitations under the License.
 """
 
-
-# src/claw/parser.py (fixed and refactored)
-
 from .token import TokenType, Token
 from .lexer import Lexer
 from .ast import (
@@ -160,27 +157,27 @@ class Parser:
         if not self.expect_peek(TokenType.LBRACE): return None # cur is now '{'
         
         if self.peek_token.type == TokenType.RBRACE:
-            self.next_token() # cur is now '}'
+            self.next_token() 
             return fields
             
-        self.next_token() # cur is now the first field name
+        self.next_token() 
         
         while True:
             if self.cur_token.type != TokenType.IDENT:
                 self.errors.append("Expected field name"); return None
             ident = Identifier(token=self.cur_token, value=self.cur_token.literal)
             
-            if not self.expect_peek(TokenType.COLON): return None # cur is ':'
-            if not self.expect_peek(TokenType.IDENT): return None # cur is type
+            if not self.expect_peek(TokenType.COLON): return None 
+            if not self.expect_peek(TokenType.IDENT): return None 
             type_node = TypeNode(token=self.cur_token, name=self.cur_token.literal)
             fields.append((ident, type_node))
 
             if self.peek_token.type == TokenType.RBRACE:
                 break
-            if not self.expect_peek(TokenType.COMMA): return None # cur is ','
-            self.next_token() # cur is the next field name
+            if not self.expect_peek(TokenType.COMMA): return None 
+            self.next_token()
 
-        if not self.expect_peek(TokenType.RBRACE): return None # cur is now '}'
+        if not self.expect_peek(TokenType.RBRACE): return None 
         return fields
 
     def parse_struct_literal(self, type_name: Expression) -> Optional[StructLiteral]:
@@ -193,14 +190,14 @@ class Parser:
             self.next_token()
             return StructLiteral(token=literal_token, type_name=type_name, members=members)
         
-        self.next_token() # cur is first member name
+        self.next_token() 
         while True:
             if self.cur_token.type != TokenType.IDENT:
                 self.errors.append("Expected member name"); return None
             ident = Identifier(token=self.cur_token, value=self.cur_token.literal)
             
-            if not self.expect_peek(TokenType.COLON): return None # cur is ':'
-            self.next_token() # cur is start of expression
+            if not self.expect_peek(TokenType.COLON): return None 
+            self.next_token() 
             
             value = self.parse_expression(Precedence.LOWEST)
             members.append((ident, value))
@@ -208,7 +205,7 @@ class Parser:
             if self.peek_token.type == TokenType.RBRACE:
                 break
             if not self.expect_peek(TokenType.COMMA): return None
-            self.next_token() # cur is next member name
+            self.next_token() 
             
         if not self.expect_peek(TokenType.RBRACE): return None
         return StructLiteral(token=literal_token, type_name=type_name, members=members)
