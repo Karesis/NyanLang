@@ -1,6 +1,6 @@
 # NyanLang 🐱
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Welcome to the official repository for the Nyan language compiler! This project is the reference implementation for Nyan, a statically-typed, minimalistic programming language that compiles down to LLVM IR.
 
@@ -105,7 +105,7 @@ Please feel free to open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the Apache 2.0 License - see the `LICENSE` file for details.
 
 
 

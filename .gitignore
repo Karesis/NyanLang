@@ -17,3 +17,6 @@ wheels/
 
 # IDE / Editor configuration files
 .vscode/
+
+# Scripts for convenience
+apply_license_header.py
