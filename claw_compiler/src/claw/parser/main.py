@@ -14,17 +14,22 @@ class Parser:
     它不包含具体的解析逻辑，而是将任务委托给子解析器。
     它管理着共享的状态，例如 token 流、错误列表以及对子解析器的引用。
     """
+    cur_token: Token
+    peek_token: Token
+
     def __init__(self, lexer: Lexer):
         # 共享状态
         self.lexer: Lexer = lexer
         self.errors: List[str] = []
 
-        self.cur_token: Optional[Token] = None
-        self.peek_token: Optional[Token] = None 
+        c = self.lexer.next_token()
+        p = self.lexer.next_token()
+
+        if c is None or p is None:
+            raise TypeError("Lexer failed to provide initial tokens. Cannot initialize Parser.")
         
-        # 初始化 token 指针
-        self.next_token()
-        self.next_token()
+        self.cur_token = c
+        self.peek_token = p
 
         # 组合子解析器
         # 我们将主 Parser 实例 (self) 传递给子解析器，
