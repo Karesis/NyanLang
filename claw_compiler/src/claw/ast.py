@@ -244,7 +244,7 @@ class ReturnStatement(Statement):
         ```
     """
     token: Token
-    return_value: Expression
+    return_value: Optional[Expression]
 
     def token_literal(self) -> str: 
         return self.token.literal

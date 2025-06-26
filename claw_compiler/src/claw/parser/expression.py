@@ -1,4 +1,3 @@
-# src/claw/parser/expression_parser.py
 """
 此模块定义了 ExpressionParser，负责解析所有类型的表达式。
 它包含了 Pratt 解析器的核心实现。
@@ -7,8 +6,15 @@ from typing import Optional, Callable, List
 
 from ..token import TokenType
 from ..ast import (
-    Expression, IntegerLiteral, PrefixExpression, InfixExpression, Identifier,
-    CallExpression, StructLiteral, MemberAccessExpression, AssignmentExpression
+    Expression, 
+    IntegerLiteral, 
+    PrefixExpression, 
+    InfixExpression, 
+    Identifier,
+    CallExpression, 
+    StructLiteral, 
+    MemberAccessExpression, 
+    AssignmentExpression
 )
 from .utils import Precedence
 
@@ -63,6 +69,9 @@ class ExpressionParser:
             return None
         
         left_exp = prefix()
+        if left_exp is None:
+            self.p.errors.append("failed to parse left-hand side expression")
+            return None
 
         while (self.p.peek_token and 
                self.p.peek_token.type != TokenType.SEMICOLON and 
@@ -74,6 +83,9 @@ class ExpressionParser:
             
             self.p.next_token()
             left_exp = infix(left_exp)
+            if left_exp is None:
+                self.p.errors.append("failed to parse right-hand side expression")
+                return None
             
         return left_exp
 
@@ -91,10 +103,15 @@ class ExpressionParser:
             self.p.errors.append(msg)
             return None
 
-    def parse_prefix_expression(self) -> PrefixExpression:
+    def parse_prefix_expression(self) -> Optional[PrefixExpression]:
         token = self.p.cur_token
         self.p.next_token()
+
         right = self.parse_expression(Precedence.PREFIX)
+        if right is None:
+            self.p.errors.append("expected right-hand side expression for prefix operator")
+            return None
+        
         return PrefixExpression(token=token, operator=token.literal, right=right)
 
     def parse_grouped_expression(self) -> Optional[Expression]:
@@ -106,15 +123,23 @@ class ExpressionParser:
 
     # --- Infix-parsing functions ---
 
-    def parse_infix_expression(self, left: Expression) -> InfixExpression:
+    def parse_infix_expression(self, left: Expression) -> Optional[InfixExpression]:
         token = self.p.cur_token
         precedence = self.p.cur_precedence()
         self.p.next_token()
+
         right = self.parse_expression(precedence)
+        if right is None:
+            self.p.errors.append("expected right-hand side expression for infix operator")
+            return None
+        
         return InfixExpression(token=token, left=left, operator=token.literal, right=right)
 
-    def parse_call_expression(self, function: Expression) -> CallExpression:
+    def parse_call_expression(self, function: Expression) -> Optional[CallExpression]:
         arguments = self.parse_call_arguments()
+        if arguments is None:
+            return None
+        
         return CallExpression(token=self.p.cur_token, function=function, arguments=arguments)
 
     def parse_call_arguments(self) -> Optional[List[Expression]]:
@@ -144,6 +169,9 @@ class ExpressionParser:
         precedence = self.p.cur_precedence()
         self.p.next_token()
         value = self.parse_expression(precedence)
+        if value is None:
+            self.p.errors.append("expected right-hand side expression for assignment")
+            return None
         
         return AssignmentExpression(token=token, left=left, value=value)
 

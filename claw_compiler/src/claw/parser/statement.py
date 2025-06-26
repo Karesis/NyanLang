@@ -7,9 +7,15 @@ from typing import Optional, List, Tuple
 # 注意我们从父级目录导入模块
 from ..token import TokenType
 from ..ast import (
-    Statement, LetStatement, ReturnStatement, ExpressionStatement,
-    FunctionDeclaration, BlockStatement, StructDefinition,
-    Identifier, TypeNode
+    Statement, 
+    LetStatement, 
+    ReturnStatement, 
+    ExpressionStatement,
+    FunctionDeclaration, 
+    BlockStatement, 
+    StructDefinition,
+    Identifier, 
+    TypeNode
 )
 # 导入Precedence是为了在调用表达式解析时使用
 from .utils import Precedence 
@@ -65,6 +71,9 @@ class StatementParser:
             self.p.next_token() # 移动到表达式的开头
             # 将表达式的解析工作委托给 ExpressionParser
             value = self.p.expressions.parse_expression(Precedence.LOWEST)
+            if value is None:
+                self.p.errors.append("Invalid expression in let statement")
+                return None
 
         if self.p.peek_token and self.p.peek_token.type == TokenType.SEMICOLON:
             self.p.next_token()
@@ -83,9 +92,12 @@ class StatementParser:
             
         return stmt
 
-    def parse_expression_statement(self) -> ExpressionStatement:
+    def parse_expression_statement(self) -> Optional[ExpressionStatement]:
         # 委托表达式解析
         expr = self.p.expressions.parse_expression(Precedence.LOWEST)
+        if expr is None:
+            self.p.errors.append("Invalid expression in statement")
+            return None
         stmt = ExpressionStatement(token=self.p.cur_token, expression=expr)
 
         if self.p.peek_token and self.p.peek_token.type == TokenType.SEMICOLON:
@@ -115,9 +127,14 @@ class StatementParser:
         params = []
 
         if not is_flow:
-            if not self.p.expect_peek(TokenType.LPAREN): return None
-            params = self.parse_function_parameters()
-        
+            if not self.p.expect_peek(TokenType.LPAREN): 
+                return None
+            parsed_params = self.parse_function_parameters()
+            if parsed_params is None:
+                self.p.errors.append("Invalid function parameters")
+                return None
+            params = parsed_params
+
         if not self.p.expect_peek(TokenType.ARROW): return None
         self.p.next_token() # 消耗返回类型
         return_type = TypeNode(token=self.p.cur_token, name=self.p.cur_token.literal)

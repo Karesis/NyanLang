@@ -1,13 +1,10 @@
-# 必要的类型和模块导入
-from typing import List, Optional
+from typing import List
 from ..lexer import Lexer
 from ..token import Token, TokenType
 from ..ast import Program
-
-# 从即将创建的子解析器模块中导入类
 from .statement import StatementParser
 from .expression import ExpressionParser
-from .utils import precedences, Precedence # 优先级也将被移到 utils.py
+from .utils import precedences, Precedence 
 
 
 class Parser:
@@ -22,8 +19,8 @@ class Parser:
         self.lexer: Lexer = lexer
         self.errors: List[str] = []
 
-        self.cur_token: Optional[Token] = None
-        self.peek_token: Optional[Token] = None
+        self.cur_token: Token 
+        self.peek_token: Token 
         
         # 初始化 token 指针
         self.next_token()

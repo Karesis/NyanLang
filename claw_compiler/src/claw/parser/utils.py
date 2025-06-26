@@ -7,7 +7,16 @@ from ..token import TokenType
 
 class Precedence(IntEnum):
     """定义了运算符的优先级，数值越大，优先级越高。"""
-    LOWEST, EQUALS, LESSGREATER, SUM, PRODUCT, PREFIX, CALL, MEMBER = range(8)
+    (
+        LOWEST, 
+        EQUALS, 
+        LESSGREATER, 
+        SUM, 
+        PRODUCT, 
+        PREFIX, 
+        CALL, 
+        MEMBER
+    ) = range(8)
 
 # 优先级映射表
 precedences = {
