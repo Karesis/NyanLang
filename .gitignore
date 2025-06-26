@@ -20,3 +20,6 @@ wheels/
 
 # Scripts for convenience
 apply_license_header.py
+
+# cache for pytest
+.pytest_cache/
