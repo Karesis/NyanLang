@@ -18,22 +18,22 @@ from enum import Enum, auto
 from dataclasses import dataclass
 
 class TokenType(Enum):
-    # --- 特殊类型 ---
-    ILLEGAL = auto()  # 非法字符或序列
-    EOF = auto()      # End of File, 文件末尾
+    # --- Special Types ---
+    ILLEGAL = auto()  # Illegal character or sequence
+    EOF = auto()      # End of File
 
-    # --- 标识符 + 字面量 ---
+    # --- Identifiers + Literals ---
     IDENT = auto()    # add, foobar, x, y, ...
     INTEGER = auto()  # 123, 42
 
-    # --- 运算符 ---
+    # --- Operators ---
     ASSIGN = auto()   # =
     PLUS = auto()     # +
     MINUS = auto()    # -
     ASTERISK = auto() # *
     SLASH = auto()    # /
-    
-    # --- 分隔符 ---
+
+    # --- Delimiters ---
     COMMA = auto()    # ,
     SEMICOLON = auto()# ;
     COLON = auto()    # :
@@ -47,7 +47,7 @@ class TokenType(Enum):
     
     ARROW = auto()    # ->
 
-    # --- 关键字 ---
+    # --- Keywords ---
 
     RET = auto()      # ret
     DEF = auto()      # def

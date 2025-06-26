@@ -17,6 +17,7 @@
 from .token import Token, TokenType, lookup_ident
 
 class Lexer:
+
     def __init__(self, source_code: str):
         self.input = source_code
         self.position = 0          # 当前正在读取的字符的位置
@@ -28,11 +29,12 @@ class Lexer:
     def read_char(self):
         """
         读取输入中的下一个字符，并前移位置指针。
-        """
+        """    
         if self.read_position >= len(self.input):
             self.ch = '\0'  # 使用 NUL 字符表示 EOF 或未读取任何内容
         else:
             self.ch = self.input[self.read_position]
+
         self.position = self.read_position
         self.read_position += 1
 
@@ -42,6 +44,7 @@ class Lexer:
         """
         if self.read_position >= len(self.input):
             return '\0'
+        
         return self.input[self.read_position]
 
     def skip_whitespace(self):
@@ -67,6 +70,7 @@ class Lexer:
         if is_letter(self.ch):
             while is_letter(self.ch) or self.ch.isdigit():
                 self.read_char()
+                
         return self.input[start_pos:self.position]
 
     def read_number(self) -> str:
@@ -76,6 +80,7 @@ class Lexer:
         start_pos = self.position
         while self.ch.isdigit():
             self.read_char()
+
         return self.input[start_pos:self.position]
 
     def next_token(self) -> Token:
