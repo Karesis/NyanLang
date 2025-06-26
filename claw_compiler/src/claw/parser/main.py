@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from ..lexer import Lexer
 from ..token import Token, TokenType
 from ..ast import Program
@@ -19,8 +19,8 @@ class Parser:
         self.lexer: Lexer = lexer
         self.errors: List[str] = []
 
-        self.cur_token: Token 
-        self.peek_token: Token 
+        self.cur_token: Optional[Token] = None
+        self.peek_token: Optional[Token] = None 
         
         # 初始化 token 指针
         self.next_token()
