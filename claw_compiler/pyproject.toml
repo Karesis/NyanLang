@@ -1,10 +1,83 @@
+# --- pyproject.toml (建议的修改版) ---
+
 [project]
 name = "claw-compiler"
-version = "0.1.0"
+version = "0.1.3"
 description = "The reference compiler for the Nyan programming language."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["llvmlite"]
+
+# 作者信息
+authors = [
+    { name = "Karesis", email = "yangyifeng23@mails.ucas.ac.cn" },
+    # 如果有其他贡献者，也可以加进来
+]
+
+# 声明项目的许可证
+# 它会告诉打包工具在打包时包含这个文件。
+license = { file = "LICENSE" }
+
+# 分类器，帮助人们在PyPI上更好地发现你的项目
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: Apache-2.0 License", # 请根据你的实际LICENSE修改
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Compilers",
+]
+
+# 关键词，同样用于搜索
+keywords = ["compiler", "llvm", "nyan", "programming language"]
+
+# 运行时依赖，目前为空，是正确的
+dependencies = []
+
+
+[project.urls]
+# 添加项目链接，比如你的GitHub仓库地址
+Homepage = "https://github.com/Karesis/NyanLang"
+"Source Code" = "https://github.com/Karesis/NyanLang"
+"Issue Tracker" = "https://github.com/Karesis/NyanLang/issues"
+
 
 [project.scripts]
 claw = "claw.cli:main"
+
+
+# ===================================================================
+#  新增: 管理可选依赖
+# ===================================================================
+[project.optional-dependencies]
+# 创建一个名为 "dev" 的依赖组
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
+
+
+# ===================================================================
+#  工具配置 
+# ===================================================================
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+strict = true
+
+
+# ===================================================================
+#  Pytest 的基本配置
+# ===================================================================
+[tool.pytest.ini_options]
+# 告诉 pytest 测试文件都在 `tests/` 目录下
+testpaths = ["tests"]
+# 默认的命令行参数。-ra 显示除了通过之外所有测试的详细信息，-q 是静默模式。
+addopts = "-ra -q"

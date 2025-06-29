@@ -1,3 +1,6 @@
+//examples/mvp.nyan
+// 这是最终需要实现的mvp的样子
+
 // 普通块/函数
 add(a: i32, b: i32) -> i32 
 {

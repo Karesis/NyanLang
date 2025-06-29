@@ -1,91 +1,99 @@
+# src/claw/lexer.py
+
 """
-   Copyright [2025] [杨亦锋]
+Defines the Lexer for the Nyan programming language.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+The Lexer's role is to take raw source code as a string and break it down into
+a sequence of tokens. It handles basic lexical analysis, such as identifying
+keywords, identifiers, literals, operators, and skipping whitespace and comments.
 """
 
 from .token import Token, TokenType, lookup_ident
 
+
 class Lexer:
+    """
+    A lexical analyzer for the Nyan language.
 
-    def __init__(self, source_code: str):
-        self.input = source_code
-        self.position = 0          # 当前正在读取的字符的位置
-        self.read_position = 0     # 即将要读取的下一个字符的位置 (超前一个)
-        self.ch = ''               # 当前正在检查的字符
+    It processes an input string character by character to produce tokens.
 
-        self.read_char() # 初始化 Lexer
+    Attributes:
+        source_code (str): The source code string to be tokenized.
+        position (int): The current character's position in the source code.
+        read_position (int): The position of the next character to be read.
+        ch (str): The current character being examined.
+    """
 
-    def read_char(self):
+    def __init__(self, source_code: str) -> None:
         """
-        读取输入中的下一个字符，并前移位置指针。
-        """    
-        if self.read_position >= len(self.input):
-            self.ch = '\0'  # 使用 NUL 字符表示 EOF 或未读取任何内容
+        Initializes the Lexer.
+
+        Args:
+            source_code: The source code string to tokenize.
+        """
+        self.source_code: str = source_code
+        self.position: int = 0         # Current character position
+        self.read_position: int = 0    # Next character position to read
+        self.ch: str = ""              # Current character under examination
+
+        self.read_char()  # Prime the lexer by reading the first character.
+
+    def read_char(self) -> None:
+        """
+        Reads the next character from the input and advances the position pointers.
+        If the end of the input is reached, self.ch is set to '\\0' (NUL).
+        """
+        if self.read_position >= len(self.source_code):
+            self.ch = '\0'  # NUL character signifies End Of File (EOF).
         else:
-            self.ch = self.input[self.read_position]
+            self.ch = self.source_code[self.read_position]
 
         self.position = self.read_position
         self.read_position += 1
 
     def peek_char(self) -> str:
         """
-        “窥视”下一个字符，但保持当前位置不变。
-        """
-        if self.read_position >= len(self.input):
-            return '\0'
-        
-        return self.input[self.read_position]
+        "Peeks" at the next character in the input without consuming it.
 
-    def skip_whitespace(self):
+        Returns:
+            The next character, or '\\0' if at the end of the input.
         """
-        跳过所有空白字符 (空格, tab, 换行)。
-        """
+        if self.read_position >= len(self.source_code):
+            return '\0'
+        return self.source_code[self.read_position]
+
+    def skip_whitespace(self) -> None:
+        """Skips over any whitespace characters (spaces, tabs, newlines)."""
         while self.ch in (' ', '\t', '\n', '\r'):
             self.read_char()
 
-    def skip_comment(self):
-        """
-        跳过单行注释，直到行尾。
-        """
+    def skip_comment(self) -> None:
+        """Skips a single-line comment (from '//' to the end of the line)."""
         while self.ch != '\n' and self.ch != '\0':
             self.read_char()
 
     def read_identifier(self) -> str:
-        """
-        读取一个完整的标识符。
-        """
+        """Reads a complete identifier string."""
         start_pos = self.position
-        # 标识符可以包含字母、数字和下划线，但必须以字母或下划线开头
-        if is_letter(self.ch):
-            while is_letter(self.ch) or self.ch.isdigit():
-                self.read_char()
-                
-        return self.input[start_pos:self.position]
+        # An identifier starts with a letter or '_' and can be followed
+        # by letters, digits, or '_'.
+        while is_letter(self.ch) or self.ch.isdigit():
+            self.read_char()
+        return self.source_code[start_pos:self.position]
 
     def read_number(self) -> str:
-        """
-        读取一个完整的数字。
-        """
+        """Reads a complete integer literal string."""
         start_pos = self.position
         while self.ch.isdigit():
             self.read_char()
-
-        return self.input[start_pos:self.position]
+        return self.source_code[start_pos:self.position]
 
     def next_token(self) -> Token:
         """
-        核心方法：分析当前字符并返回对应的 Token。
+        Analyzes the current character to produce the next token.
+
+        This is the main method of the lexer. It dispatches to other methods
+        based on the current character and returns the corresponding token.
         """
         self.skip_whitespace()
 
@@ -98,8 +106,9 @@ class Lexer:
                 tok = Token(TokenType.PLUS, self.ch)
             case '-':
                 if self.peek_char() == '>':
+                    # Two-character token: ->
                     ch = self.ch
-                    self.read_char() # 消费 '-'
+                    self.read_char()  # Consume '-'
                     literal = ch + self.ch
                     tok = Token(TokenType.ARROW, literal)
                 else:
@@ -108,10 +117,13 @@ class Lexer:
                 tok = Token(TokenType.ASTERISK, self.ch)
             case '/':
                 if self.peek_char() == '/':
-                    self.read_char() # 消费第一个 '/'
-                    self.read_char() # 消费第二个 '/'
+                    # This is a single-line comment.
+                    self.read_char()  # Consume the first '/'
+                    self.read_char()  # Consume the second '/'
                     self.skip_comment()
-                    return self.next_token() # 递归调用以获取注释后的下一个token
+                    # After skipping, recursively call next_token to get the
+                    # actual next token.
+                    return self.next_token()
                 else:
                     tok = Token(TokenType.SLASH, self.ch)
             case '(':
@@ -137,19 +149,22 @@ class Lexer:
             case _:
                 if is_letter(self.ch):
                     literal = self.read_identifier()
-                    token_type = lookup_ident(literal) # 检查是否为关键字
-                    # read_identifier 内部已经移动了指针，所以直接返回
+                    token_type = lookup_ident(literal)  # Check if it's a keyword
+                    # read_identifier has already advanced the pointers, so we return early.
                     return Token(token_type, literal)
                 elif self.ch.isdigit():
                     literal = self.read_number()
-                    # read_number 内部已经移动了指针，所以直接返回
+                    # read_number has also advanced, so return early.
                     return Token(TokenType.INTEGER, literal)
                 else:
                     tok = Token(TokenType.ILLEGAL, self.ch)
-        
-        self.read_char() # 为下一个 token 前进指针
+
+        self.read_char()  # Advance pointers for the next token.
         return tok
 
-# 辅助函数
+
+# --- Helper Functions ---
+
 def is_letter(ch: str) -> bool:
+    """Checks if a character is a letter or an underscore."""
     return 'a' <= ch <= 'z' or 'A' <= ch <= 'Z' or ch == '_'

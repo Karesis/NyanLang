@@ -1,95 +1,136 @@
-from typing import List, Optional
+# src/claw/parser/main.py
+
+"""
+Defines the main Parser for the Nyan language.
+
+The Parser acts as a coordinator, delegating parsing tasks to specialized
+sub-parsers for statements and expressions. It manages the shared state,
+including the token stream and error collection.
+"""
+
+from __future__ import annotations
+
+from ..ast import Program
 from ..lexer import Lexer
 from ..token import Token, TokenType
-from ..ast import Program
-from .statement import StatementParser
-from .expression import ExpressionParser
-from .utils import precedences, Precedence 
+from .expression_parser import ExpressionParser
+from .statement_parser import StatementParser
+from .utils import Precedence, precedences
 
 
 class Parser:
     """
-    主解析器类，作为协调器。
+    The main parser, acting as a coordinator for sub-parsers.
 
-    它不包含具体的解析逻辑，而是将任务委托给子解析器。
-    它管理着共享的状态，例如 token 流、错误列表以及对子解析器的引用。
+    This class does not contain specific parsing logic itself. Instead, it holds
+    the shared state (token stream, errors) and provides helper methods that
+    the sub-parsers (`StatementParser`, `ExpressionParser`) use to do their work.
+
+    Attributes:
+        lexer (Lexer): The lexer instance providing the token stream.
+        errors (list[str]): A list of error messages accumulated during parsing.
+        cur_token (Token): The current token being examined.
+        peek_token (Token): The next token in the stream (one token lookahead).
+        statements (StatementParser): The sub-parser responsible for statements.
+        expressions (ExpressionParser): The sub-parser responsible for expressions.
     """
     cur_token: Token
     peek_token: Token
+    statements: StatementParser
+    expressions: ExpressionParser
 
-    def __init__(self, lexer: Lexer):
-        # 共享状态
-        self.lexer: Lexer = lexer
-        self.errors: List[str] = []
+    def __init__(self, lexer: Lexer) -> None:
+        """
+        Initializes the parser and primes it by loading the first two tokens.
 
-        c = self.lexer.next_token()
-        p = self.lexer.next_token()
+        The parser requires a two-token lookahead (`cur_token` and `peek_token`)
+        to support Pratt parsing, where decisions are made based on the
+        precedence of the upcoming token.
 
-        if c is None or p is None:
-            raise TypeError("Lexer failed to provide initial tokens. Cannot initialize Parser.")
-        
-        self.cur_token = c
-        self.peek_token = p
+        Args:
+            lexer: An initialized Lexer instance.
+        """
+        self.lexer = lexer
+        self.errors: list[str] = []
 
-        # 组合子解析器
-        # 我们将主 Parser 实例 (self) 传递给子解析器，
-        # 以便它们可以访问共享状态 (tokens, errors) 和辅助方法 (next_token)。
+        # Prime the parser by loading the first two tokens.
+        # This is necessary for the lookahead mechanism to work from the start.
+        # Note: The original 'is None' check was removed because our Lexer's
+        # `next_token` method is guaranteed to always return a Token instance.
+        self.cur_token = self.lexer.next_token()
+        self.peek_token = self.lexer.next_token()
+
+        # Compose the sub-parsers, passing this main parser instance so they
+        # can access shared state (tokens, errors) and helper methods.
         self.statements = StatementParser(self)
         self.expressions = ExpressionParser(self)
 
-    # --- 基础辅助函数 (供所有子解析器使用) ---
+    # --- Core Token Helpers (used by all sub-parsers) ---
 
-    def next_token(self):
-        """向前移动 token 指针。"""
+    def next_token(self) -> None:
+        """Advances the token stream by one token."""
         self.cur_token = self.peek_token
         self.peek_token = self.lexer.next_token()
 
     def expect_peek(self, t: TokenType) -> bool:
         """
-        断言下一个 token 的类型是否符合预期。
-        如果符合，则消耗它并返回 True。
-        如果不符合，记录错误并返回 False。
+        Asserts that the next token is of the expected type.
+
+        If the peeked token matches the expected type, it consumes the token
+        (advances the stream) and returns True. Otherwise, it records an error
+        and returns False.
+
+        Args:
+            t: The expected TokenType.
+
+        Returns:
+            True if the token matched and was consumed, False otherwise.
         """
-        if self.peek_token and self.peek_token.type == t:
+        if self.peek_token.type == t:
             self.next_token()
             return True
         self.peek_error(t)
         return False
 
-    def peek_error(self, t: TokenType):
-        """记录一个关于期望的下一个 token 的错误。"""
-        msg = (f"expected next token to be {t.name}, "
-               f"got {self.peek_token.type.name if self.peek_token else 'EOF'}")
+    def peek_error(self, t: TokenType) -> None:
+        """Records an error message for an unexpected peeked token."""
+        msg = (
+            f"expected next token to be {t.name}, "
+            f"got {self.peek_token.type.name} instead"
+        )
         self.errors.append(msg)
 
     def peek_precedence(self) -> Precedence:
-        """获取下一个 token 的优先级。"""
-        if self.peek_token:
-            return precedences.get(self.peek_token.type, Precedence.LOWEST)
-        return Precedence.LOWEST
+        """Gets the precedence of the next (peek) token."""
+        return precedences.get(self.peek_token.type, Precedence.LOWEST)
 
     def cur_precedence(self) -> Precedence:
-        """获取当前 token 的优先级。"""
-        if self.cur_token:
-            return precedences.get(self.cur_token.type, Precedence.LOWEST)
-        return Precedence.LOWEST
+        """Gets the precedence of the current token."""
+        return precedences.get(self.cur_token.type, Precedence.LOWEST)
 
-    # --- 顶层解析入口 ---
+    # --- Top-Level Parsing Entry Point ---
 
     def parse_program(self) -> Program:
         """
-        解析整个程序，生成 AST 的根节点。
-        这是解析过程的唯一入口点。
+        Parses the entire source code and returns the root AST node.
+
+        This is the main entry point for the parsing process. It iterates through
+        the token stream until EOF, delegating the parsing of each statement
+        to the `StatementParser`.
+
+        Returns:
+            The root `Program` node of the generated AST.
         """
         program = Program(statements=[])
 
-        while self.cur_token and self.cur_token.type != TokenType.EOF:
-            # 将语句解析任务委托给 StatementParser
+        while self.cur_token.type != TokenType.EOF:
+            # Delegate statement parsing to the specialized sub-parser.
             stmt = self.statements.parse_statement()
-            if stmt:
+            if stmt is not None:
                 program.statements.append(stmt)
-            
-            # 在每个语句之后前进 token，这是主循环的职责
+
+            # Advancing the token is the responsibility of the main loop
+            # after each statement is parsed.
             self.next_token()
-            
+
         return program

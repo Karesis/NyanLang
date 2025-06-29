@@ -78,7 +78,7 @@ Here is a sample of what Nyan language code looks like:
 def { x: i32, y: i32 } Point
 
 // The main execution block, which returns an i32
-@main -> i32
+@main_flow
 {
     // Declare and instantiate a variable 'p' of type 'Point'
     p: Point = Point{ x: 10, y: 20 }
@@ -96,6 +96,7 @@ def { x: i32, y: i32 } Point
 // Execute the main block
 main;
 ````
+Because the *flow* and *block* are the core in nyanlang and it is a little bit hard to finish, I will take the "main" and "function" as an early subsitute.
 
 ## 🤝 Contributing
 
