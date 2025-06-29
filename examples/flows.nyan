@@ -1,0 +1,12 @@
+@print_hello
+{
+    print("hello!!")
+}
+
+@add_some_thing_and_print
+{
+    reslt: i32 := 8 + 34 + 8 + 9 + 66
+}
+
+add_some_thing_and_print; // 125
+print_hello; // hello!

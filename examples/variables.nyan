@@ -1,0 +1,17 @@
+@main
+{
+    x: i32 := 7
+    x :=8
+    y: i32 := x
+    x := x+1
+    print(x)
+    print(y)
+    z: ~i32 = 8
+    z = z * 5
+    print(z)
+    condition: bool := true
+    print(condition)
+    lang_name: str := "Nyan ~ !"
+    print(lang_name)
+}
+main;
