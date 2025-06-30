@@ -31,10 +31,10 @@ mul(x: i32, y: i32) -> i32{x: i32, y: i32}
     // you can also use Point to refer to "{x: i32, y: i32}"
     // p: Point := Point(3, 8)
     // is as the same as the p: {x: i32, y: i32} := Point(3, 8)
-    // you can also use 
-    // reslt: add := add(4, 7)
-    // but its not suggested
-
+    /* you can also use 
+     reslt: add := add(4, 7)
+     but its not suggested
+    */
     z: mul := mul(5, 7)
     print(z) // 35, the main value
     print(z.x) // 5
