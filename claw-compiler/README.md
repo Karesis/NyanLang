@@ -17,7 +17,7 @@ The foundation of the compiler is laid. The current version includes:
 
 ## 🗺️ Roadmap to v0.1.0
 
-Our immediate goal is to reach `v0.1.0`, the first **interpretable and runnable** version of NyanLang.
+My immediate goal is to reach `v0.1.0`, the first **interpretable and runnable** version of NyanLang.
 
 1.  ✅ **v0.0.3: Lexer** (Complete)
 2.  ➡️ **In Progress: Parser** - Translating the token stream into an Abstract Syntax Tree (AST).
@@ -83,7 +83,7 @@ cd claw-compiler
 
 ### 3\. Running the Test Suite
 
-Our test suite is the primary way to verify functionality. All tests are run using `pytest`.
+The test suite is the primary way to verify functionality. All tests are run using `pytest`.
 
 1.  **Run all tests:**
     *From the `NyanLang/claw-compiler` directory:*
