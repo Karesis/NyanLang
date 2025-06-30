@@ -1,4 +1,4 @@
-# Claw Compiler  Claw
+# Claw Compiler  
 
 **The Reference Implementation for the NyanLang Programming Language**
 
