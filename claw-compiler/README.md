@@ -40,11 +40,11 @@ First, set up the project on your local machine.
     cd NyanLang
     ```
 
-2.  **Create and activate a Python virtual environment:**
+2.  **Create and activate a Python virtual environment using uv:**
     *It is highly recommended to work from within the `NyanLang` root directory.*
     ```bash
     # Create a virtual environment named .venv
-    python -m venv .venv
+    uv venv -p pypy@3.11
 
     # Activate on Windows
     .\.venv\Scripts\activate
@@ -56,6 +56,7 @@ First, set up the project on your local machine.
 3.  **Install the project in editable mode:**
     *This command installs the `claw-compiler` project and its dependencies using `uv`.*
     ```bash
+    uv pip install .[dev]
     uv pip install -e claw-compiler
     ```
 
