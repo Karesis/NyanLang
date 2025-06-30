@@ -1,7 +1,7 @@
 [project]
 name = "claw-compiler"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.0.3"
+description = "A reference compiler for the Nyan programming language"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
