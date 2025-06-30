@@ -10,7 +10,7 @@ And I will maybe make a version on Rust in the future, But im learning, so it wi
 ## Core Syntax
 1.
 // for comments
-/// ... /// for multi-lines comments
+/* ... */ for multi-lines comments
 
 2.
 x: i32 // to tell compiler *hey here is a i32 named x*, and it can't be changed.
