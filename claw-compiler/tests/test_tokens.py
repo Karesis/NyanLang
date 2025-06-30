@@ -2,10 +2,10 @@ import pytest
 from claw.tokens import Token, TokenType, check_keyword
 
 def test_token_creation():
-    token = Token(TokenType.IDENTIFIER, "myVar")
+    token = Token(TokenType.IDENTIFIER, "myVar", line=1, column=1)
     assert token.token_type == TokenType.IDENTIFIER
     assert token.literal == "myVar"
-    assert repr(token) == "Token(type=IDENTIFIER, literal='myVar')"
+    assert repr(token) == "Token(type=IDENTIFIER, literal='myVar', line=1, column=1)"
 
 @pytest.mark.parametrize("input_identifier,expected_type", [
     # Test all known keywords
