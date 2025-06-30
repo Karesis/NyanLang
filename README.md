@@ -14,7 +14,7 @@ This repository is structured as a monorepo containing all official components o
 
 | Component | Directory | Status | Description |
 | :--- | :--- | :--- | :--- |
-| **Reference Compiler** | [`./claw-compiler/`](./claw-compiler/) |  активная разработка | The reference implementation of the Nyan compiler. |
+| **Reference Compiler** | [`./claw-compiler/`](./claw-compiler/) |  In Progress | The reference implementation of the Nyan compiler. |
 | **Language Specification** | [`docs/SPECIFICATION.md`](./claw-compiler/docs/SPECIFICATION.md) | In Progress | The formal specification for Nyan syntax and semantics. |
 | **Standard Library** | `(Planned)` | Not Started | The future home of Nyan's standard library (`std`). |
 | **Tooling** | `(Planned)` | Not Started | Future plans include a language server, formatter, etc. |
