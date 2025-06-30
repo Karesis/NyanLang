@@ -36,7 +36,7 @@ First, set up the project on your local machine.
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/Karesis/NyanLang.git](https://github.com/Karesis/NyanLang.git)
+    git clone https://github.com/Karesis/NyanLang.git
     cd NyanLang
     ```
 
