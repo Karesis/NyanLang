@@ -1,12 +1,5 @@
 # this is the first and the start point of nyanlang.
 
-The first part is just a lexer, that can lex the raw codes to tokens.(0.0.1 is for lexer completion)
-I will take the llvm ir to be the front part, and use pypy to ensure it's not to embarass when talking about the speed.
-
-Llvmlite has a lot of sh*t, and its not using typing. I just learn python >= 3.13, so I need some new features to handle the mass and big project build. (I know it just work on Numba, but it doesn't suite me.)
-
-And I will maybe make a version on Rust in the future, But im learning, so it will take time. This project start when a  f*cking university student want to run GNU himself and its not really a good idea.
-
 ## Core Syntax
 1.
 // for comments
