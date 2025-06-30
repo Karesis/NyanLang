@@ -21,7 +21,7 @@ This repository is structured as a monorepo containing all official components o
 
 ## 🗺️ High-Level Roadmap
 
-Our primary goal is to bring the Nyan language to life through a phased approach:
+My primary goal is to bring the Nyan language to life through a phased approach:
 
 1.  **Phase 1: Core Implementation (In Progress)**
     * Develop a feature-complete reference compiler/interpreter (`claw-compiler`).
