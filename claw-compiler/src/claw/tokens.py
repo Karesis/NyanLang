@@ -81,10 +81,14 @@ class Token:
 
     token_type: TokenType
     literal: str
+    line: int
+    column: int
 
     def __repr__(self) -> str:
         """Provides a developer-friendly representation of the token."""
-        return f"Token(type={self.token_type.name}, literal='{self.literal}')"
+        return (f"Token(type={self.token_type.name}, "
+                f"literal='{self.literal}', "
+                f"line={self.line}, column={self.column})")
 
 
 def check_keyword(ident: str) -> TokenType:
