@@ -116,7 +116,6 @@ while xxx {
 // as the above. 
  
 // and don't forget to use continue to continue it.
-// conue? ctn? go? pass? hurry? hrry? -->?==>? maybe i will think out a syntax for it. continue is much too long for me. maybe con or conue 's fine.
-
+// use con to continue, its as good as ret.
 
 
