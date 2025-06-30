@@ -1,0 +1,26 @@
+@main
+{
+    condition: bool := false
+    x: i32 := if condition {34} else {8}
+    if x == 32 {
+        print("true")
+    } else {
+        print("false")
+    }
+
+    y: ~i32 = 8
+    loop
+    {
+        y = y + 1
+        if y == 30 { break }
+    }
+    print(y)
+
+    while y > 0
+    {
+        y = y - 1
+    }
+    print(y)
+
+}
+main;

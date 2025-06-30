@@ -1,0 +1,43 @@
+// block Point
+Point(x: i32, y: i32) -> {x: i32, y: i32}
+{
+    .x
+    .y
+}
+
+// block add
+add(x: i32, y: i32) -> i32
+{
+    ret x + y
+}
+
+// block mul
+mul(x: i32, y: i32) -> i32{x: i32, y: i32}
+{
+    .x
+    .y
+    ret x*y
+}
+
+@main
+{
+    reslt: i32 := add(4, 7)
+    print(reslt)
+
+    // using block to *make* structure is a good choice
+    p: {x: i32, y: i32} := Point(3, 8)
+    print(p.x)
+    print(p.y)
+    // you can also use Point to refer to "{x: i32, y: i32}"
+    // p: Point := Point(3, 8)
+    // is as the same as the p: {x: i32, y: i32} := Point(3, 8)
+    // you can also use 
+    // reslt: add := add(4, 7)
+    // but its not suggested
+
+    z: mul := mul(5, 7)
+    print(z) // 35, the main value
+    print(z.x) // 5
+    print(z.y) // 7
+}
+main;
