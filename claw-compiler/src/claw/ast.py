@@ -36,7 +36,7 @@ class Statement(Node):
 
 class Expression(Node):
     """A base class for expression nodes, which produce a value."""
-    pass
+    token: Token  # The token that triggered this expression
 
 
 # =============================================================================
@@ -185,7 +185,7 @@ class InfixExpression(Expression):
 class AssignmentExpression(Expression):
     """Represents a mutable assignment, such as `z = 7`."""
     token: Token  # The '=' token
-    name: Identifier
+    name: Expression
     value: Expression
 
     def token_literal(self) -> str:
@@ -291,6 +291,7 @@ class LetStatement(Statement):
     """Represents a variable declaration, e.g., `x: i32 := 5`."""
     token: Token      # The identifier token
     name: Identifier
+    mutable: bool     # True if the type was prefixed with '~'
     value_type: TypeNode | None
     value: Expression | None
 
