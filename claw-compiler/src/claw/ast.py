@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from .tokens import Token, TokenType
+from .tokens import Token
 
 
 # =============================================================================
@@ -27,6 +27,10 @@ class Node(ABC):
         Used primarily for debugging and testing.
         """
         raise NotImplementedError
+    
+    def __str__(self) -> str:
+        """Provides a string representation of the node, useful for debugging."""
+        return self.token_literal()
 
 
 class Statement(Node):
@@ -66,6 +70,9 @@ class MutableType(TypeNode):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"~{self.base_type}"
 
 
 @dataclass(frozen=True)
@@ -76,6 +83,10 @@ class StructTypeLiteral(TypeNode):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        fields_str = ", ".join(f"{name.value}: {type_node}" for name, type_node in self.fields.items())
+        return f"{{ {fields_str} }}"
 
 
 @dataclass(frozen=True)
@@ -87,6 +98,9 @@ class CompositeType(TypeNode):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"{self.primary_type}{self.struct_type}"
 
 
 # =============================================================================
@@ -102,6 +116,9 @@ class Program(Node):
         if self.statements:
             return self.statements[0].token_literal()
         return ""
+    
+    def __str__(self) -> str:
+        return "".join(str(s) for s in self.statements)
 
 
 # =============================================================================
@@ -116,6 +133,9 @@ class Identifier(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return self.value
 
 
 @dataclass(frozen=True)
@@ -126,6 +146,9 @@ class IntegerLiteral(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 @dataclass(frozen=True)
@@ -136,6 +159,9 @@ class FloatLiteral(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 @dataclass(frozen=True)
@@ -146,6 +172,10 @@ class StringLiteral(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        # Represent it as a source-code-like string literal
+        return f'"{self.value}"'
 
 
 @dataclass(frozen=True)
@@ -155,6 +185,9 @@ class BooleanLiteral(Expression):
     value: bool
 
     def token_literal(self) -> str:
+        return self.token.literal
+    
+    def __str__(self) -> str:
         return self.token.literal
 
 
@@ -167,6 +200,9 @@ class PrefixExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str: 
+        return f"({self.operator}{self.right})"
 
 
 @dataclass(frozen=True)
@@ -179,6 +215,9 @@ class InfixExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str: 
+        return f"({self.left} {self.operator} {self.right})"
 
 
 @dataclass(frozen=True)
@@ -191,6 +230,8 @@ class AssignmentExpression(Expression):
     def token_literal(self) -> str:
         return self.token.literal
 
+    def __str__(self) -> str: 
+        return f"({self.name} = {self.value})"
 
 @dataclass(frozen=True)
 class IfExpression(Expression):
@@ -203,6 +244,9 @@ class IfExpression(Expression):
     def token_literal(self) -> str:
         return self.token.literal
 
+    def __str__(self) -> str:
+        alt_str = f" else {{ {self.alternative} }}" if self.alternative else ""
+        return f"if {self.condition} {{ {self.consequence} }}{alt_str}"
 
 @dataclass(frozen=True)
 class LoopExpression(Expression):
@@ -212,6 +256,9 @@ class LoopExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"loop {{ {self.body} }}"
 
 
 @dataclass(frozen=True)
@@ -223,6 +270,9 @@ class WhileExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"while {self.condition} {{ {self.body} }}"
 
 
 @dataclass(frozen=True)
@@ -237,6 +287,12 @@ class FunctionLiteral(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        params_str = ", ".join(f"{p.value}: {self.param_types[p]}" for p in self.parameters)
+        name_str = self.name.value if self.name else ""
+        return_str = f" -> {self.return_type}" if self.return_type else ""
+        return f"{name_str}({params_str}){return_str} {{ {self.body} }}"
 
 
 @dataclass(frozen=True)
@@ -248,6 +304,10 @@ class CallExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        args_str = ", ".join(str(arg) for arg in self.arguments)
+        return f"{self.function}({args_str})"
 
 
 @dataclass(frozen=True)
@@ -259,6 +319,10 @@ class StructLiteral(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        fields_str = ", ".join(f"{name.value}: {value}" for name, value in self.fields.items())
+        return f"{self.name.value}{{{fields_str}}}"
 
 
 @dataclass(frozen=True)
@@ -270,6 +334,9 @@ class MemberAccessExpression(Expression):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"({self.object}.{self.property.value})"
 
 
 # =============================================================================
@@ -284,6 +351,9 @@ class BlockStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return "".join(str(s) for s in self.statements)
 
 
 @dataclass(frozen=True)
@@ -297,7 +367,10 @@ class LetStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
-
+    
+    def __str__(self) -> str:
+        val_str = f" := {self.value}" if self.value else ""
+        return f"{self.name}: {self.value_type}{val_str}"
 
 @dataclass(frozen=True)
 class ReturnStatement(Statement):
@@ -307,7 +380,9 @@ class ReturnStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
-
+    
+    def __str__(self) -> str:
+        return f"ret {self.return_value};" if self.return_value else "ret;"
 
 @dataclass(frozen=True)
 class BreakStatement(Statement):
@@ -317,6 +392,9 @@ class BreakStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"break {self.return_value};" if self.return_value else "break;"
 
 
 @dataclass(frozen=True)
@@ -327,6 +405,9 @@ class ContinueStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"con {self.return_value};" if self.return_value else "con;"
 
 
 @dataclass(frozen=True)
@@ -338,6 +419,10 @@ class DefStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        fields_str = ", ".join(f"{name.value}: {type_node}" for name, type_node in self.fields.items())
+        return f"def {{ {fields_str} }} {self.name.value}"
 
 
 @dataclass(frozen=True)
@@ -349,6 +434,9 @@ class FlowStatement(Statement):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"@{self.name.value} {{ {self.body} }}"
 
 
 @dataclass(frozen=True)
@@ -362,15 +450,10 @@ class ExpressionStatement(Statement):
     @property
     def token(self) -> Token:
         """The token is the first token of the contained expression."""
-        # This is a bit of a special case. To get the token, we need to
-        # access the expression's token. We can't store it directly in the
-        # dataclass since it's derived data.
-        current_node = self.expression
-        while isinstance(current_node, ExpressionStatement):
-             current_node = current_node.expression
-        # Now current_node is guaranteed to be a non-ExpressionStatement node
-        # which will have a 'token' attribute.
-        return getattr(current_node, 'token', Token(TokenType.ILLEGAL, "", 0, 0))
+        return self.expression.token
 
     def token_literal(self) -> str:
         return self.expression.token_literal()
+    
+    def __str__(self) -> str: 
+        return str(self.expression)
